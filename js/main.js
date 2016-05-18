@@ -5,13 +5,16 @@ var ctx = canvas.getContext('2d');
 
 // D A T A
 
-var width = 1000;
+// var camera;
+// save(); translate(-camera.x, -camera.y); drawItAll(); restore();
+
+var width = 800;
 var height = 400;
 canvas.width = width;
 canvas.height = height;
 
 var player = {
-  x: width/2,   // x axis position
+  x: 100,   // x axis position
   y: height - 20, // y axis position
   width: 10,
   height: 20,
@@ -33,17 +36,6 @@ var friction = 0.875;
 var gravity = 0.6;
 
 
-var testPlatform = {
-  x: width/2,
-  y: 350,
-  width: 100,
-  height: 10
-  // draw: function() {
-  //   ctx.fillStyle = '#000';
-  //   ctx.fillRect(testPlatform.x, testPlatform.y, testPlatform.width, testPlatform.height);
-  // }
-};
-
 // platform constructor
 
 // function Platform(x, y, width, height) {
@@ -58,55 +50,53 @@ var testPlatform = {
 // }
 
 var boxes = [];
-// boxes to bound area because using collision detection
-// left
-boxes.push(testPlatform);
-boxes.push({
-  x: 0,
-  y: 0,
-  width: 1,
-  height: height
-});
-// bottom
+// bottom, right, left boundaries
 boxes.push({
   x: 0,
   y: height - 1,
   width: width,
   height: 1
 });
-// right
 boxes.push({
   x: width - 1,
   y: 0,
   width: 1,
   height: height
 });
+boxes.push({
+  x: 0,
+  y: 0,
+  width: 1,
+  height: height
+});
+// test platforms
+for (var i = 100; i <= 5000; i = i + 300) {
+  boxes.push({
+    x: i,
+    y: 350,
+    width: 150,
+    height: 10
+  });
+}
 
 boxes.push({
-  x: 120,
-  y: 10,
-  width: 80,
-  height: 80
+  x: 200,
+  y: 250,
+  width: 150,
+  height: 50
 });
 boxes.push({
-  x: 170,
-  y: 50,
-  width: 80,
-  height: 80
+  x: 400,
+  y: 200,
+  width: 150,
+  height: 10
 });
 boxes.push({
-  x: 220,
-  y: 100,
-  width: 80,
-  height: 80
-});
-boxes.push({
-  x: 270,
-  y: 150,
-  width: 40,
-  height: 40
-});
-
+  x: 350,
+  y: 350,
+  width: 100,
+  height: 10
+})
 
 document.addEventListener('keydown', function(e) {
   //console.log(e.keyCode);
@@ -162,43 +152,7 @@ function move() {
   player.velX *= friction; //.875
   player.velY += gravity;  // .6
 }
-  // player.x += player.velX;
-  // player.y += player.velY;
 
-// no longer need because collisionCheck function
-
-// check horizontal boundary
-//   if (player.x >= width-player.width) {
-//       player.x = width-player.width;
-//   } else if (player.x <= 0) {
-//       player.x = 0;
-//   }
-//   // check vertical boundary
-//   if (player.y >= height - player.height){
-//           player.y = height - player.height;
-//           player.jumping = false;
-//       }
-// }
-
-
-// function pfCollision(){
-//   if (player.x >= testPlatform.x - player.width && player.x <= testPlatform.x + testPlatform.width && player.y >= testPlatform.y - player.height) {
-//     player.y = testPlatform.y - player.height;
-//     player.jumping = false;
-//   }
-// }
-
-// function pfCollision(){
-//   if (player.x >= testPlatform.x - player.width && player.x <= testPlatform.x + testPlatform.width){
-//     if (player.y <= testPlatform.y + player.height) {
-//       player.jumping = true;
-//       player.y = testPlatform.y + testPlatform.height;
-//       player.velY = 0;
-//     }
-//   }
-// }
-
-// G A M E   L O O P
 
 function collisionCheck(player, platform) {
   // get vectors to check against
@@ -241,19 +195,25 @@ function collisionCheck(player, platform) {
   return collisionDirection;
 };
 
+
+
+// G A M E   L O O P
+
 function update() {
 
-  ctx.clearRect(0,0,width,height);
+  // ctx.translate(-player.x, 0);
+
+  // ctx.clearRect(0,0,width,height);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
   player.draw();
   move();
-  //////// trailing effect /////////
-  // ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  // ctx.fillRect(0,0,canvas.width,canvas.height);
-  // testPlatform.draw();
+  player.grounded = false;
+
   ctx.fillStyle = "black";
   ctx.beginPath();
-
-  player.grounded = false;
   for (var i = 0; i < boxes.length; i++) {
     ctx.rect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
 
@@ -279,7 +239,6 @@ function update() {
 
   ctx.fill();
 
-  // pfCollision();
   requestAnimationFrame(update);
 }
 
