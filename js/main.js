@@ -51,9 +51,10 @@ var player2 = {
     ctx.fillRect(player2.x, player2.y, player2.width, player2.height);
   }
 };
-
+// sounds
 var p1jump = document.getElementById('p1-jump');
 var p2jump = document.getElementById('p2-jump');
+var coinSound = document.getElementById('coin');
 
 var keys = [];
 
@@ -306,6 +307,7 @@ function collisionCoin(player, coin) {
 }
 
 
+
 // G A M E   L O O P
 
 function update() {
@@ -373,21 +375,31 @@ function update() {
   ctx.closePath();
   ctx.fill();
 
-  // draw coins & check collision & clear
+  // draw coins & check collision & clear coins
   ctx.fillStyle = "gold";
   ctx.beginPath();
   for (var i = 0; i < coins.length; i++) {
     ctx.rect(coins[i].x, coins[i].y, coins[i].width, coins[i].height);
     var coinCol = collisionCoin(player, coins[i]);
+    var coinCol2 = collisionCoin(player2, coins[i]);
     ctx.fill();
     // if (coinCol === true) coins[i].clear();
     if (coinCol === true){
       coins.splice(i, 1);
+      coinSound.play();
       player.score++;
+    }
+    if (coinCol2 === true){
+      coins.splice(i, 1);
+      coinSound.play();
+      player2.score++;
     }
 
   }
 
+  // display score
+  document.getElementById('p1-score').textContent = player.score;
+  document.getElementById('p2-score').textContent = player2.score;
 
   if (playing) requestAnimationFrame(update);
 }
