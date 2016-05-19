@@ -20,13 +20,14 @@ var player = {
   width: 10,
   height: 20,
   maxVelX: 6,
+  // vel < 1/2 player width + 1/2 box width
   maxVelY: 12,
   // added max Y velocity because player was falling through platforms
   velX: 0,
   velY: 0,
   jumping: false,
   grounded: false,
-  //jumping: 0,
+  score: 0,
   draw: function() {
     ctx.fillStyle = '#09F';
     ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -39,11 +40,12 @@ var player2 = {
   width: 10,
   height: 20,
   maxVelX: 6,
+  maxVelY: 12,
   velX: 0,
   velY: 0,
   jumping: false,
   grounded: false,
-  //jumping: 0,
+  score: 0,
   draw: function() {
     ctx.fillStyle = 'rgb(255, 162, 167)';
     ctx.fillRect(player2.x, player2.y, player2.width, player2.height);
@@ -77,7 +79,7 @@ function Platform(x, y) {
 }
 
 boxes.push(new Platform(100, 30));
-boxes.push(new Platform(300, 80));
+boxes.push(new Platform(350, 80));
 boxes.push(new Platform(500, 155));
 boxes.push(new Platform(700, 245));
 boxes.push(new Platform(900, 355));
@@ -87,7 +89,7 @@ boxes.push(new Platform(1100, 480));
 boxes.push(new Platform(900, 530));
 boxes.push(new Platform(700, 560));
 boxes.push(new Platform(500, 610));
-boxes.push(new Platform(300, 685));
+boxes.push(new Platform(300, 650));
 
 // // 1400 x 700px
 // for (var i = 0; i < 25; i++){
@@ -99,9 +101,6 @@ boxes.push(new Platform(300, 685));
 // }
 
 // bottom, left, right boundaries
-
-//
-
 boxes.push({
   x: -10,
   y: height,
@@ -112,13 +111,13 @@ boxes.push({
   x: -10,
   y: -120,
   width: 10,
-  height: height + 120
+  height: height + 125
 });
 boxes.push({
-  x: width + 1,
-  y: 0,
-  width: 1,
-  height: height
+  x: width,
+  y: -120,
+  width: 10,
+  height: height + 125
 });
 
 
@@ -154,12 +153,14 @@ boxes.push({
 // });
 
 var coins = [];
-coins.push({
-  x: 100,
-  y:650,
-  width: 10,
-  height: 10
-});
+for (var i = 50; i < 1400; i += 100) {
+  coins.push({
+    x: i,
+    y: 685,
+    width: 7,
+    height: 7
+  });
+}
 
 document.addEventListener('keydown', function(e) {
   //console.log(e.keyCode);
@@ -188,20 +189,8 @@ function move() {
       p1jump.play();
       player.grounded = false;
       player.velY = -player.maxVelY;
-
     }
   };
-
-  // if (keys[38] || keys[32]) {
-  //   player.jumping = 0;
-  //   player.jumping++;
-  //   if (player.jumping < 3) {
-  //     console.log('jump', player.jumping);
-  //     player.velY = -player.maxVelX*2;
-  //     console.log('velY', player.velY);
-  //     console.log('maxVelX', player.maxVelX);
-  //   }
-  // };
 
   // right arrow
   if (keys[39]) {
@@ -223,29 +212,16 @@ function move() {
 }
 
 function move2() {
-  ////////// try adding numJumps. when not jump/grounded
-
   // up arrow/space
   if (keys[87]) {
     if (!player2.jumping && player2.grounded) {
       player2.jumping = true;
       p2jump.play();
       player2.grounded = false;
-      player2.velY = -player2.maxVelX*2;
+      player2.velY = -player2.maxVelY;
 
     }
   };
-
-  // if (keys[38] || keys[32]) {
-  //   player.jumping = 0;
-  //   player.jumping++;
-  //   if (player.jumping < 3) {
-  //     console.log('jump', player.jumping);
-  //     player.velY = -player.maxVelX*2;
-  //     console.log('velY', player.velY);
-  //     console.log('maxVelX', player.maxVelX);
-  //   }
-  // };
 
   // right arrow
   if (keys[68]) {
@@ -263,6 +239,7 @@ function move2() {
 
   player2.velX *= friction; //.875
   player2.velY += gravity;  // .6
+  if (player2.velY <= -player2.maxVelY) player2.velY = -player2.maxVelY;
 }
 
 
@@ -359,8 +336,8 @@ function update() {
       player2.grounded = true;
       player2.jumping = false;
     } else if (dir2 === "t") {
-      player2.velY *= -1;
-      // player2.velY = 0;
+      // player2.velY *= -1;
+      player2.velY = 0;
     }
   }
 
@@ -377,8 +354,16 @@ function update() {
 
   player2.x += player2.velX;
   player2.y += player2.velY;
-
+  ctx.closePath();
   ctx.fill();
+
+  ctx.fillStyle = "gold";
+  ctx.beginPath();
+  for (var i = 0; i < coins.length; i++) {
+    ctx.rect(coins[i].x, coins[i].y, coins[i].width, coins[i].height);
+  }
+  ctx.fill();
+
 
   if (playing) requestAnimationFrame(update);
 }
