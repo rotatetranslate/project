@@ -8,14 +8,14 @@ var ctx = canvas.getContext('2d');
 // var camera;
 // save(); translate(-camera.x, -camera.y); draw(); restore();
 
-var width = 800;
-var height = 400;
+var width = 1400;
+var height = 700;
 canvas.width = width;
 canvas.height = height;
 
 var player = {
-  x: 100,   // x axis position
-  y: height - 20, // y axis position
+  x: 50,   // x axis position
+  y: 345, // y axis position
   width: 10,
   height: 20,
   speed: 6,
@@ -31,8 +31,8 @@ var player = {
 };
 
 var player2 = {
-  x: width - 100,   // x axis position
-  y: height - 20, // y axis position
+  x: width - 50,   // x axis position
+  y: 345, // y axis position
   width: 10,
   height: 20,
   speed: 6,
@@ -70,21 +70,21 @@ var gravity = 0.6;
 // }
 
 var boxes = [];
-// bottom, right, left boundaries
+// bottom, left, right boundaries
 boxes.push({
   x: 0,
-  y: height - 1,
+  y: height + 1,
   width: width,
   height: 1
 });
 boxes.push({
-  x: width - 1,
+  x: -1,
   y: 0,
   width: 1,
   height: height
 });
 boxes.push({
-  x: 0,
+  x: width + 1,
   y: 0,
   width: 1,
   height: height
@@ -93,7 +93,7 @@ boxes.push({
 for (var i = 100; i <= 5000; i = i + 300) {
   boxes.push({
     x: i,
-    y: 350,
+    y: height - 50,
     width: 150,
     height: 10
   });
@@ -116,7 +116,15 @@ boxes.push({
   y: 350,
   width: 100,
   height: 10
-})
+});
+
+var coins = [];
+coins.push({
+  x: 100,
+  y:650,
+  width: 10,
+  height: 10
+});
 
 document.addEventListener('keydown', function(e) {
   //console.log(e.keyCode);
@@ -135,7 +143,7 @@ function move() {
   ////////// try adding numJumps. when not jump/grounded
 
   // up arrow/space
-  if (keys[38] || keys[32]) {
+  if (keys[38]) {
     if (!player.jumping && player.grounded) {
       player.jumping = true;
       p1jump.play();
@@ -330,7 +338,9 @@ function update() {
   requestAnimationFrame(update);
 }
 
-update();
+var start = document.getElementById('start');
+start.addEventListener('click', update);
+// once clicked, change to pause
 
 
 
