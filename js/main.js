@@ -1,4 +1,5 @@
 // physics and collision detection from: http://www.somethinghitme.com/2013/04/16/creating-a-canvas-platformer-tutorial-part-tw/
+var playing;
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
@@ -14,11 +15,13 @@ canvas.width = width;
 canvas.height = height;
 
 var player = {
-  x: 50,   // x axis position
-  y: 345, // y axis position
+  x: 200,   // x axis position
+  y: 0, // y axis position
   width: 10,
   height: 20,
-  speed: 6,
+  maxVelX: 6,
+  maxVelY: 12,
+  // added max Y velocity because player was falling through platforms
   velX: 0,
   velY: 0,
   jumping: false,
@@ -35,7 +38,7 @@ var player2 = {
   y: 345, // y axis position
   width: 10,
   height: 20,
-  speed: 6,
+  maxVelX: 6,
   velX: 0,
   velY: 0,
   jumping: false,
@@ -57,36 +60,59 @@ var gravity = 0.6;
 
 
 // platform constructor
+var boxes = [];
 
-function Platform(x, y, width, height) {
+// function Platform(x, y, width, height) {
+//   this.x = x;
+//   this.y = y;
+//   this.width = width;
+//   this.height = height;
+// }
+
+function Platform(x, y) {
   this.x = x;
   this.y = y;
-  this.width = width;
-  this.height = height;
+  this.width = 150;
+  this.height = 10;
 }
 
-var boxes = [];
-// 1400 x 700px
-for (var i = 0; i < 25; i++){
- var randWidth = Math.floor(Math.random() * 250) + 50;
- var randHeight = Math.floor(Math.random() * 30) + 10;
- var randX = Math.floor(Math.random() * 1300);
- var randY = Math.floor(Math.random() * 650);
- boxes.push(new Platform(randX, randY, randWidth, randHeight));
-}
+boxes.push(new Platform(100, 30));
+boxes.push(new Platform(300, 80));
+boxes.push(new Platform(500, 155));
+boxes.push(new Platform(700, 245));
+boxes.push(new Platform(900, 355));
+boxes.push(new Platform(1100, 385));
+boxes.push(new Platform(1300, 405));
+boxes.push(new Platform(1100, 480));
+boxes.push(new Platform(900, 530));
+boxes.push(new Platform(700, 560));
+boxes.push(new Platform(500, 610));
+boxes.push(new Platform(300, 685));
+
+// // 1400 x 700px
+// for (var i = 0; i < 25; i++){
+//  var randWidth = Math.floor(Math.random() * 250) + 50;
+//  var randHeight = Math.floor(Math.random() * 30) + 10;
+//  var randX = Math.floor(Math.random() * 1300);
+//  var randY = Math.floor(Math.random() * 650);
+//  boxes.push(new Platform(randX, randY, randWidth, randHeight));
+// }
 
 // bottom, left, right boundaries
+
+//
+
 boxes.push({
-  x: 0,
-  y: height + 1,
-  width: width,
-  height: 1
+  x: -10,
+  y: height,
+  width: width + 20,
+  height: 10
 });
 boxes.push({
-  x: -1,
-  y: 0,
-  width: 1,
-  height: height
+  x: -10,
+  y: -120,
+  width: 10,
+  height: height + 120
 });
 boxes.push({
   x: width + 1,
@@ -94,13 +120,17 @@ boxes.push({
   width: 1,
   height: height
 });
-// test platforms
-// for (var i = 100; i <= 5000; i = i + 300) {
+
+
+
+
+
+// for (var i = 100; i <= 1000; i = i + 200) {
 //   boxes.push({
 //     x: i,
 //     y: height - 50,
-//     width: 150,
-//     height: 10
+//     width: 100,
+//     height: 15
 //   });
 // }
 
@@ -134,6 +164,10 @@ coins.push({
 document.addEventListener('keydown', function(e) {
   //console.log(e.keyCode);
   keys[e.keyCode] = true;
+
+  if (e.keyCode === 80) {
+    playing ? pauseGame() : startGame();
+  }
 });
 
 document.addEventListener('keyup', function(e) {
@@ -153,7 +187,7 @@ function move() {
       player.jumping = true;
       p1jump.play();
       player.grounded = false;
-      player.velY = -player.speed*2;
+      player.velY = -player.maxVelY;
 
     }
   };
@@ -163,28 +197,29 @@ function move() {
   //   player.jumping++;
   //   if (player.jumping < 3) {
   //     console.log('jump', player.jumping);
-  //     player.velY = -player.speed*2;
+  //     player.velY = -player.maxVelX*2;
   //     console.log('velY', player.velY);
-  //     console.log('speed', player.speed);
+  //     console.log('maxVelX', player.maxVelX);
   //   }
   // };
 
   // right arrow
   if (keys[39]) {
-    if (player.velX < player.speed) {
+    if (player.velX < player.maxVelX) {
       player.velX++;
     }
   };
 
   // left arrow
   if (keys[37]) {
-    if (player.velX > -player.speed) {
+    if (player.velX > -player.maxVelX) {
       player.velX--;
     }
   };
 
   player.velX *= friction; //.875
   player.velY += gravity;  // .6
+  if (player.velY <= -player.maxVelY) player.velY = -player.maxVelY;
 }
 
 function move2() {
@@ -196,7 +231,7 @@ function move2() {
       player2.jumping = true;
       p2jump.play();
       player2.grounded = false;
-      player2.velY = -player2.speed*2;
+      player2.velY = -player2.maxVelX*2;
 
     }
   };
@@ -206,22 +241,22 @@ function move2() {
   //   player.jumping++;
   //   if (player.jumping < 3) {
   //     console.log('jump', player.jumping);
-  //     player.velY = -player.speed*2;
+  //     player.velY = -player.maxVelX*2;
   //     console.log('velY', player.velY);
-  //     console.log('speed', player.speed);
+  //     console.log('maxVelX', player.maxVelX);
   //   }
   // };
 
   // right arrow
   if (keys[68]) {
-    if (player2.velX < player2.speed) {
+    if (player2.velX < player2.maxVelX) {
       player2.velX++;
     }
   };
 
   // left arrow
   if (keys[65]) {
-    if (player2.velX > -player2.speed) {
+    if (player2.velX > -player2.maxVelX) {
       player2.velX--;
     }
   };
@@ -252,13 +287,13 @@ function collisionCheck(player, platform) {
     var overlapY = minDistanceOriginsY - Math.abs(actualDistanceY);
 
     if (overlapX >= overlapY && actualDistanceY > 0) {
-      // player hits feet/top of platform
       // actualDistance > 0 === y coordinate of player > y coordinate of platform
+      // player hits head/bottom of platform
       collisionDirection = 't';
       // player.y incremented = moved down distance needed to put at edge of platform
       player.y += overlapY;
     } else if (overlapX >= overlapY && actualDistanceY < 0) {
-      // player hits head/bottom of platform
+      // player hits feet/top of platform
       collisionDirection = 'b';
       player.y -= overlapY;
     } else if (overlapY >= overlapX && actualDistanceX > 0) {
@@ -277,7 +312,6 @@ function collisionCheck(player, platform) {
 // G A M E   L O O P
 
 function update() {
-
   // ctx.translate(-player.x, 0);
 
   // ctx.clearRect(0,0,width,height);
@@ -300,27 +334,33 @@ function update() {
 
     var dir = collisionCheck(player, boxes[i]);
     var dir2 = collisionCheck(player2, boxes[i]);
-    var dirP = collisionCheck(player, player2);
-    var dirP2 = collisionCheck(player2, player);
+    // var dirP = collisionCheck(player, player2);
+    // var dirP2 = collisionCheck(player2, player);
 
     if (dir === "l" || dir === "r") {
       player.velX = 0;
       player.jumping = false;
     } else if (dir === "b") {
+      console.log('b');
+      player.velY = 0;
       player.grounded = true;
       player.jumping = false;
     } else if (dir === "t") {
-      player.velY *= -1;
+      console.log('t');
+      // player.velY *= -1;
+      player.velY = 0;
     }
 
     if (dir2 === "l" || dir2 === "r") {
       player2.velX = 0;
       player2.jumping = false;
     } else if (dir2 === "b") {
+      player2.velY = 0;
       player2.grounded = true;
       player2.jumping = false;
     } else if (dir2 === "t") {
       player2.velY *= -1;
+      // player2.velY = 0;
     }
   }
 
@@ -340,13 +380,22 @@ function update() {
 
   ctx.fill();
 
-  requestAnimationFrame(update);
+  if (playing) requestAnimationFrame(update);
+}
+
+
+function startGame() {
+  console.log('hello')
+  if (!playing) {
+    playing = true;
+    update();
+  }
+}
+
+function pauseGame() {
+  playing = false;
 }
 
 var start = document.getElementById('start');
-start.addEventListener('click', update);
+start.addEventListener('click', startGame);
 // once clicked, change to pause
-
-
-
-
