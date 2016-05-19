@@ -158,7 +158,11 @@ for (var i = 50; i < 1400; i += 100) {
     x: i,
     y: 685,
     width: 7,
-    height: 7
+    height: 7,
+    clear: function(){
+      console.log(this);
+      return ctx.clearRect(this.x, this.y, this.width, this.height);
+    }
   });
 }
 
@@ -285,14 +289,27 @@ function collisionCheck(player, platform) {
 };
 
 
+function collisionCoin(player, coin) {
+  var actualDistanceX = (player.x + (player.width/2)) - (coin.x + (coin.width/2));
+  var actualDistanceY = (player.y + (player.height/2)) - (coin.y + (coin.height/2));
+  var minDistanceOriginsX = (player.width/2) + (coin.width/2);
+  var minDistanceOriginsY = (player.height/2) + (coin.height/2);
+  var collision = false;
+  if (Math.abs(actualDistanceX) < minDistanceOriginsX && Math.abs(actualDistanceY) < minDistanceOriginsY) {
+    collision = true;
+    // player.score++;
+    // coin.clear();
+    console.log('p1 score', player.score)
+    console.log('coin!');
+  }
+  return collision;
+}
+
 
 // G A M E   L O O P
 
 function update() {
-  // ctx.translate(-player.x, 0);
-
   // ctx.clearRect(0,0,width,height);
-
   ctx.fillStyle = 'rgba(255,255,255,0.3)';
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
@@ -304,6 +321,7 @@ function update() {
   move2();
   player2.grounded = false;
 
+  // draw platforms & check for collisions
   ctx.fillStyle = "black";
   ctx.beginPath();
   for (var i = 0; i < boxes.length; i++) {
@@ -318,12 +336,10 @@ function update() {
       player.velX = 0;
       player.jumping = false;
     } else if (dir === "b") {
-      console.log('b');
       player.velY = 0;
       player.grounded = true;
       player.jumping = false;
     } else if (dir === "t") {
-      console.log('t');
       // player.velY *= -1;
       player.velY = 0;
     }
@@ -357,12 +373,20 @@ function update() {
   ctx.closePath();
   ctx.fill();
 
+  // draw coins & check collision & clear
   ctx.fillStyle = "gold";
   ctx.beginPath();
   for (var i = 0; i < coins.length; i++) {
     ctx.rect(coins[i].x, coins[i].y, coins[i].width, coins[i].height);
+    var coinCol = collisionCoin(player, coins[i]);
+    ctx.fill();
+    // if (coinCol === true) coins[i].clear();
+    if (coinCol === true){
+      coins.splice(i, 1);
+      player.score++;
+    }
+
   }
-  ctx.fill();
 
 
   if (playing) requestAnimationFrame(update);
