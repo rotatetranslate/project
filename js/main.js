@@ -58,18 +58,23 @@ var gravity = 0.6;
 
 // platform constructor
 
-// function Platform(x, y, width, height) {
-//   this.x = x;
-//   this.y = y;
-//   this.width = width;
-//   this.height = height;
-//   this.draw = function(){
-//     ctx.fillStyle = '#000';
-//     ctx.fillRect(Platform.x, Platform.y, Platform.width, Platform.height);
-//   }
-// }
+function Platform(x, y, width, height) {
+  this.x = x;
+  this.y = y;
+  this.width = width;
+  this.height = height;
+}
 
 var boxes = [];
+// 1400 x 700px
+for (var i = 0; i < 25; i++){
+ var randWidth = Math.floor(Math.random() * 250) + 50;
+ var randHeight = Math.floor(Math.random() * 30) + 10;
+ var randX = Math.floor(Math.random() * 1300);
+ var randY = Math.floor(Math.random() * 650);
+ boxes.push(new Platform(randX, randY, randWidth, randHeight));
+}
+
 // bottom, left, right boundaries
 boxes.push({
   x: 0,
@@ -90,33 +95,33 @@ boxes.push({
   height: height
 });
 // test platforms
-for (var i = 100; i <= 5000; i = i + 300) {
-  boxes.push({
-    x: i,
-    y: height - 50,
-    width: 150,
-    height: 10
-  });
-}
+// for (var i = 100; i <= 5000; i = i + 300) {
+//   boxes.push({
+//     x: i,
+//     y: height - 50,
+//     width: 150,
+//     height: 10
+//   });
+// }
 
-boxes.push({
-  x: 200,
-  y: 250,
-  width: 150,
-  height: 50
-});
-boxes.push({
-  x: 400,
-  y: 200,
-  width: 150,
-  height: 10
-});
-boxes.push({
-  x: 350,
-  y: 350,
-  width: 100,
-  height: 10
-});
+// boxes.push({
+//   x: 200,
+//   y: 250,
+//   width: 150,
+//   height: 50
+// });
+// boxes.push({
+//   x: 400,
+//   y: 200,
+//   width: 150,
+//   height: 10
+// });
+// boxes.push({
+//   x: 350,
+//   y: 350,
+//   width: 100,
+//   height: 10
+// });
 
 var coins = [];
 coins.push({
