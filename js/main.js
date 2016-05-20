@@ -1,6 +1,24 @@
 // physics and collision detection from: http://www.somethinghitme.com/2013/04/16/creating-a-canvas-platformer-tutorial-part-tw/
 var playing;
 
+var timerDiv = document.getElementById('timer');
+function timer(time) {
+  timerDiv.innerHTML = time.toFixed(2);
+  if (time <= .00001) {
+    winGame();
+  } else {
+    setTimeout(function() {
+      console.log(time);
+      time -= .01;
+      timer(time);
+    }, 10);
+  }
+}
+
+
+
+
+
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
@@ -15,6 +33,7 @@ canvas.width = width;
 canvas.height = height;
 
 var player = {
+  name: 'Player 1',
   x: 200,   // x axis position
   y: 0, // y axis position
   width: 10,
@@ -35,6 +54,7 @@ var player = {
 };
 
 var player2 = {
+  name: 'Player 2',
   x: width - 50,   // x axis position
   y: 345, // y axis position
   width: 10,
@@ -410,13 +430,28 @@ function startGame() {
   if (!playing) {
     playing = true;
     update();
+    timer(5);
   }
 }
+// div.innerhtml = timer
 
 function pauseGame() {
   playing = false;
 }
 
+function winGame() {
+  pauseGame();
+  var winner;
+  if (player.score > player2.score) {
+    winner = player;
+  } else {
+    winner = player2;
+  }
+  console.log(winner.name + ' won the game');
+  return winner;
+}
+
 var start = document.getElementById('start');
 start.addEventListener('click', startGame);
+
 // once clicked, change to pause
