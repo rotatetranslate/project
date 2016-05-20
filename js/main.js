@@ -9,9 +9,9 @@ function timer(time) {
   } else {
     setTimeout(function() {
       console.log(time);
-      time -= .01;
+      time -= .1;
       timer(time);
-    }, 10);
+    }, 100);
   }
 }
 
@@ -34,8 +34,8 @@ canvas.height = height;
 
 var player = {
   name: 'Player 1',
-  x: 200,   // x axis position
-  y: 0, // y axis position
+  x: width - 30,   // x axis position
+  y: 500, // y axis position
   width: 10,
   height: 20,
   maxVelX: 6,
@@ -56,7 +56,7 @@ var player = {
 var player2 = {
   name: 'Player 2',
   x: width - 50,   // x axis position
-  y: 345, // y axis position
+  y: 500, // y axis position
   width: 10,
   height: 20,
   maxVelX: 6,
@@ -92,26 +92,32 @@ var boxes = [];
 //   this.height = height;
 // }
 
-function Platform(x, y) {
+function Platform(x, y, width, height) {
   this.x = x;
   this.y = y;
-  this.width = 150;
-  this.height = 10;
+  this.width = width;
+  this.height = height;
 }
 
-boxes.push(new Platform(100, 30));
-boxes.push(new Platform(350, 80));
-boxes.push(new Platform(500, 155));
-boxes.push(new Platform(700, 245));
-boxes.push(new Platform(900, 355));
-boxes.push(new Platform(1100, 385));
-boxes.push(new Platform(1300, 405));
-boxes.push(new Platform(1100, 480));
-boxes.push(new Platform(900, 530));
-boxes.push(new Platform(700, 560));
-boxes.push(new Platform(500, 610));
-boxes.push(new Platform(300, 650));
+boxes.push(new Platform(20 + width/2, height - 114, 11, 114));
+boxes.push(new Platform(250, 75, 100, 10));
+boxes.push(new Platform(500, 155, 50, 10)); //
+boxes.push(new Platform(700, 245, 150, 10));
+boxes.push(new Platform(900, 355, 150, 10));
+boxes.push(new Platform(1090, 380, 200, 10));
+//boxes.push(new Platform(1300, 405, 150, 10));
+boxes.push(new Platform(1100, 480, 150, 10));
+boxes.push(new Platform(750, 425, 150, 10));
+boxes.push(new Platform(550, 500, 150, 10));
+boxes.push(new Platform(350, 575, 150, 10));
+boxes.push(new Platform(150, 650, 150, 10));
+boxes.push(new Platform(50, 340, 50, 10)); // \/
+boxes.push(new Platform(250, 340, 40, 10));
+boxes.push(new Platform(400, 340, 50, 10));
+boxes.push(new Platform(1050, 200, 50, 10));
+boxes.push(new Platform(1150, 100, 30, 10));
 
+// strech goal
 // // 1400 x 700px
 // for (var i = 0; i < 25; i++){
 //  var randWidth = Math.floor(Math.random() * 250) + 50;
@@ -141,36 +147,9 @@ boxes.push({
   height: height + 125
 });
 
-
-// for (var i = 100; i <= 1000; i = i + 200) {
-//   boxes.push({
-//     x: i,
-//     y: height - 50,
-//     width: 100,
-//     height: 15
-//   });
-// }
-
-// boxes.push({
-//   x: 200,
-//   y: 250,
-//   width: 150,
-//   height: 50
-// });
-// boxes.push({
-//   x: 400,
-//   y: 200,
-//   width: 150,
-//   height: 10
-// });
-// boxes.push({
-//   x: 350,
-//   y: 350,
-//   width: 100,
-//   height: 10
-// });
-
 //coin constructor
+
+
 
 function Coin(x, y) {
   this.x = x;
@@ -180,10 +159,37 @@ function Coin(x, y) {
   this.sound = new Audio('./sound/SFX_Jump_12.wav');
 }
 
+//Coin.prototype.sound = new Audio('./sound/SFX_Jump_12.wav');
+
 var coins = [];
-for (var i = 50; i < 1400; i += 100) {
-  coins.push(new Coin(i, 685));
+
+// for (var i = 50; i < 1400; i += 100) {
+//   coins.push(new Coin(i, 685));
+// }
+
+// for (var i = 0; i < boxes.length; i++) {
+//   coins.push(new Coin(boxes[i].x + (boxes[i].width /2), boxes[i].y - 15));
+// }
+
+for (var i = 0; i < boxes.length; i++) {
+  coins.push(new Coin(boxes[i].x + (boxes[i].width /2), boxes[i].y - 15));
 }
+
+
+// hard code addl coins on skinny platforms for now - multiple for loops wrecks performance
+// (or just too many coins?)
+coins.push(new Coin(525, 100));
+coins.push(new Coin(75, 300));
+coins.push(new Coin(75, 275));
+coins.push(new Coin(75, 250));
+coins.push(new Coin(75, 225));
+coins.push(new Coin(1075, 150));
+coins.push(new Coin(1075, 125));
+coins.push(new Coin(1165, 65));
+coins.push(new Coin(1165, 40));
+coins.push(new Coin(1165, 15));
+coins.push(new Coin(1125, 465));
+coins.push(new Coin(1225, 465));
 
 // for (var i = 50; i < 1400; i += 100) {
 //   coins.push({
@@ -437,7 +443,7 @@ function startGame() {
   if (!playing) {
     playing = true;
     update();
-    //timer(5);
+    timer(30);
   }
 }
 // div.innerhtml = timer
@@ -454,7 +460,7 @@ function winGame() {
   } else {
     winner = player2;
   }
-  console.log(winner.name + ' won the game');
+  timerDiv.innerHTML = winner.name + ' wins!';
   //return winner;
 }
 
