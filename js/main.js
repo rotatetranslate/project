@@ -170,6 +170,7 @@ boxes.push({
 //   height: 10
 // });
 
+//coin constructor
 
 function Coin(x, y) {
   this.x = x;
@@ -183,7 +184,6 @@ var coins = [];
 for (var i = 50; i < 1400; i += 100) {
   coins.push(new Coin(i, 685));
 }
-
 
 // for (var i = 50; i < 1400; i += 100) {
 //   coins.push({
@@ -410,15 +410,15 @@ function update() {
     var coinCol = collisionCoin(player, coins[i]);
     var coinCol2 = collisionCoin(player2, coins[i]);
     ctx.fill();
-    // if (coinCol === true) coins[i].clear();
+
     if (coinCol === true){
       coins[i].sound.play();
       coins.splice(i, 1);
       player.score++;
     }
     if (coinCol2 === true){
+      coins[i].sound.play();
       coins.splice(i, 1);
-      // coinSound.play();
       player2.score++;
     }
 
@@ -455,7 +455,7 @@ function winGame() {
     winner = player2;
   }
   console.log(winner.name + ' won the game');
-  return winner;
+  //return winner;
 }
 
 var start = document.getElementById('start');
