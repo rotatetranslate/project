@@ -142,9 +142,6 @@ boxes.push({
 });
 
 
-
-
-
 // for (var i = 100; i <= 1000; i = i + 200) {
 //   boxes.push({
 //     x: i,
@@ -173,19 +170,29 @@ boxes.push({
 //   height: 10
 // });
 
+
+function Coin(x, y) {
+  this.x = x;
+  this.y = y;
+  this.width = 7;
+  this.height = 7;
+  this.sound = new Audio('./sound/SFX_Jump_12.wav');
+}
+
 var coins = [];
 for (var i = 50; i < 1400; i += 100) {
-  coins.push({
-    x: i,
-    y: 685,
-    width: 7,
-    height: 7,
-    clear: function(){
-      console.log(this);
-      return ctx.clearRect(this.x, this.y, this.width, this.height);
-    }
-  });
+  coins.push(new Coin(i, 685));
 }
+
+
+// for (var i = 50; i < 1400; i += 100) {
+//   coins.push({
+//     x: i,
+//     y: 685,
+//     width: 7,
+//     height: 7,
+//   });
+// }
 
 document.addEventListener('keydown', function(e) {
   //console.log(e.keyCode);
@@ -233,7 +240,7 @@ function move() {
 
   player.velX *= friction; //.875
   player.velY += gravity;  // .6
-  if (player.velY <= -player.maxVelY) player.velY = -player.maxVelY;
+  if (Math.abs(player.velY) >= player.maxVelY) player.velY = player.maxVelY;
 }
 
 function move2() {
@@ -264,7 +271,7 @@ function move2() {
 
   player2.velX *= friction; //.875
   player2.velY += gravity;  // .6
-  if (player2.velY <= -player2.maxVelY) player2.velY = -player2.maxVelY;
+  if (Math.abs(player2.velY) >= player2.maxVelY) player2.velY = player2.maxVelY;
 }
 
 
@@ -405,13 +412,13 @@ function update() {
     ctx.fill();
     // if (coinCol === true) coins[i].clear();
     if (coinCol === true){
+      coins[i].sound.play();
       coins.splice(i, 1);
-      coinSound.play();
       player.score++;
     }
     if (coinCol2 === true){
       coins.splice(i, 1);
-      coinSound.play();
+      // coinSound.play();
       player2.score++;
     }
 
@@ -430,7 +437,7 @@ function startGame() {
   if (!playing) {
     playing = true;
     update();
-    timer(5);
+    //timer(5);
   }
 }
 // div.innerhtml = timer
