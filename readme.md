@@ -25,6 +25,7 @@ Originally envisioned a simple sidescrolling platformer-mechanic like Super Mari
 [Trello board](https://trello.com/b/idzIy7KF/game-brainstorm)
 
 ##Play
+[Thanks github pages](http://rotatetranslate.github.io/project/)
 
 
 ##Next Steps / Icebox
